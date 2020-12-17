@@ -8,6 +8,8 @@ Part of the Chaos Testing Suite
 
 [Chaos Testing Subsystem](https://github.com/tapankarnik/Chaos-Testing)
 
+[Monitoring Testing Subsystem](https://github.com/tapankarnik/Monitoring_System)
+
 This subsystem exposes a webhook for the jobs from the DCN to report their completion and provides metrics to the GUI.
 
 Jobs are reported by the DCN workers at localhost:5031/job_done.
@@ -25,4 +27,10 @@ Sample JSON for reporting completion of jobs
         "job_duration":4
     }
 
+## Docker Build
 
+Use the following to build the docker image
+
+    docker build -t mss .
+
+Then follow the instructions in the DCN readme
