@@ -7,7 +7,6 @@ import json
 app = Flask(__name__)
 
 jobs = {}
-#jobs = {"ajmal": {"total": 15, "completed": 10, "succesful": 5, "failed": 5}}
 
 @app.route('/job_status', methods=['GET'])
 def jobs_status():
@@ -23,11 +22,13 @@ def job_completion():
                 raise Exception('Invalid Job Name')
             if data['num_jobs']<0 or data['num_jobs']==0 or data['num_jobs']>100:
                 raise Exception('Invalid Number of Jobs')
+            if data['job_id']<0 or data['job_id']>=data['num_jobs']:
+                raise Exception('Invalid Job ID')
             if data['job_duration']<=0 or data['job_duration']>30:
                 raise Exception('Invalid Job Duration')
 
-        except Exception:
-            return "Invalid Input", 400
+        except Exception as e:
+            return "Invalid Input" + str(e), 400
 
         job_name = data['job_name']
         num_jobs = data['num_jobs']
@@ -35,7 +36,7 @@ def job_completion():
         
         if job_name in jobs:
             if jobs[job_name]["total"] == jobs[job_name]["completed"]:
-                return "Don't send more jobs lolz", 400
+                return "Don't send more jobs.", 400
             else:
                 jobs[job_name]["completed"] += 1
         else:
@@ -48,14 +49,13 @@ def job_completion():
 
     else:
         return b"Not a JSON input", 400
+
 @app.route('/status', methods=['GET'])
 def status_update():
 
     client = docker.from_env()
     containers = client.containers.list()
     container_list = [container.name for container in containers]
-    #print("Container List")
-    #print(container_list)
     status_list = []
     for container in containers:
         stats = container.stats(stream=False)
@@ -80,8 +80,6 @@ def status_update():
                 }
         status_list.append(name_and_stats)
         print(cpu_mem_stats)
-    #pp = pprint.PrettyPrinter(indent=4)
-    #pp.pprint(containers[4].stats(stream=False))
     return jsonify(status_list), 200
 
 
